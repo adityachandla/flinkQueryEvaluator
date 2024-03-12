@@ -16,13 +16,13 @@ class QueryParserTest {
         assertEquals(q.getLabelDirections().size(), 3);
 
         assertEquals(q.getLabelDirections().get(0).getLabel(), "personKnows");
-        assertEquals(q.getLabelDirections().get(0).getDirection(), LabelDirection.Direction.BOTH);
+        assertEquals(q.getLabelDirections().get(0).getDirection(), Direction.BOTH);
 
         assertEquals(q.getLabelDirections().get(1).getLabel(), "personInterestTag");
-        assertEquals(q.getLabelDirections().get(1).getDirection(), LabelDirection.Direction.OUTGOING);
+        assertEquals(q.getLabelDirections().get(1).getDirection(), Direction.OUTGOING);
 
         assertEquals(q.getLabelDirections().get(2).getLabel(), "tagClass");
-        assertEquals(q.getLabelDirections().get(2).getDirection(), LabelDirection.Direction.OUTGOING);
+        assertEquals(q.getLabelDirections().get(2).getDirection(), Direction.OUTGOING);
 
     }
 

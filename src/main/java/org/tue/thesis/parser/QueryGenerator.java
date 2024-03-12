@@ -3,7 +3,9 @@ package org.tue.thesis.parser;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @AllArgsConstructor
 public class QueryGenerator {
@@ -13,12 +15,18 @@ public class QueryGenerator {
 
     public GeneratedQuery generate(Query query) {
         var nodeInterval = intervalMap.valueOf(query.getSourceType());
-        int node = nodeInterval.getStart() + random.nextInt(nodeInterval.getEnd()-nodeInterval.getStart());
+        int node = nodeInterval.getStart() + random.nextInt(nodeInterval.getEnd() - nodeInterval.getStart());
         var labelDirections = new ArrayList<GeneratedQuery.LabelDirection>();
-        for (var lblDir : query.getLabelDirections() ) {
+        for (var lblDir : query.getLabelDirections()) {
             int labelInt = edgeMap.valueOf(lblDir.getLabel());
             labelDirections.add(new GeneratedQuery.LabelDirection(labelInt, lblDir.getDirection()));
         }
         return new GeneratedQuery(query.getId(), node, labelDirections);
+    }
+
+    public List<GeneratedQuery> generateAll(List<Query> queries) {
+        return queries.stream()
+                .map(this::generate)
+                .collect(Collectors.toList());
     }
 }

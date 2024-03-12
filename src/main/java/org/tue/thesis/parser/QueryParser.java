@@ -17,11 +17,11 @@ public class QueryParser {
         String name = srcMatcher.group(1);
 
         var edgeMatcher = edgePattern.matcher(line);
-        List<LabelDirection> labelDirections = new ArrayList<>();
+        List<Query.LabelDirection> labelDirections = new ArrayList<>();
         while(edgeMatcher.find()) {
-            var direction = LabelDirection.Direction.parseDirection(edgeMatcher.group(1));
+            var direction = Direction.parseDirection(edgeMatcher.group(1));
             var label = edgeMatcher.group(2);
-            labelDirections.add(new LabelDirection(label, direction));
+            labelDirections.add(new Query.LabelDirection(label, direction));
         }
         return new Query(id, name, labelDirections);
     }

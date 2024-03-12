@@ -1,86 +1,66 @@
 package org.tue.thesis;
 
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.functions.JoinFunction;
-import org.apache.flink.api.common.functions.RichFlatMapFunction;
-import org.apache.flink.api.common.serialization.SimpleStringEncoder;
-import org.apache.flink.api.common.state.ValueState;
-import org.apache.flink.api.common.state.ValueStateDescriptor;
-import org.apache.flink.api.common.typeinfo.Types;
-import org.apache.flink.configuration.Configuration;
-import org.apache.flink.connector.file.sink.FileSink;
-import org.apache.flink.connector.file.src.FileSource;
-import org.apache.flink.core.fs.Path;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
-import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
-import org.apache.flink.util.Collector;
-import org.tue.thesis.dto.Edge;
-import org.tue.thesis.dto.EdgeReaderFormat;
-import org.tue.thesis.parser.LabelDirection;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.tue.thesis.parser.*;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 public class QueryProcessor {
 
-    private static final String inputPath = "file:///home/aditya/Documents/projects/flinkGraphProcessor/input.txt";
-    private static final String outputPath = "file:///home/aditya/Documents/projects/flinkGraphProcessor/";
-
-
     public static void main(String[] args) throws Exception {
-        try (var env = StreamExecutionEnvironment.getExecutionEnvironment()) {
-            env.setParallelism(1);
+        Options opts = new Options();
+        var inputPathOpt = new Option("i", "input", true, "Input path");
+        opts.addOption(inputPathOpt);
+        var outputPathOpt = new Option("o", "output", true, "Output path");
+        opts.addOption(outputPathOpt);
+        var parser = new DefaultParser();
+        var commandLine = parser.parse(opts, args);
 
-            var fileSource = FileSource.forRecordStreamFormat(new EdgeReaderFormat(), new Path(inputPath));
+        var queries = getQueries();
+        var edgeMap = EdgeMap.fromFile(getResourceInputStream("edgeMap.csv"));
+        System.out.println("Got edge map");
+        var intervalMap = IntervalMap.fromFile(getResourceInputStream("nodeMap1.csv"));
+        System.out.println("Got interval map");
+        var generator = new QueryGenerator(edgeMap, intervalMap);
+        System.out.println("Got query generator");
+        var generatedQueries = generator.generateAll(queries);
+        System.out.println("Generated queries: " + generatedQueries);
 
-            DataStream<Edge> edgeStream = env
-                    .fromSource(fileSource.build(), WatermarkStrategy.noWatermarks(), "adjacencyMatrix");
-
-            DataStream<Integer> frontier = env.fromCollection(List.of(1));
-
-//            var query = List.of(new LabelDirection(2, true),
-//                    new LabelDirection(1, true),
-//                    new LabelDirection(1, true));
-//
-//            for (var lblDir : query) {
-//                frontier = bfsNext(edgeStream, frontier, lblDir);
-//            }
-            frontier.sinkTo(FileSink.forRowFormat(new Path(outputPath), new SimpleStringEncoder<Integer>()).build());
-
-            env.execute("File reader");
-        }
+        var env = PipelineGenerator.getExecutionEnvironment(commandLine, generatedQueries);
+        env.execute("File reader");
     }
 
-    private static DataStream<Integer> bfsNext(DataStream<Edge> allEdges, DataStream<Integer> frontier, LabelDirection lblDir) {
-        return allEdges
-                .join(frontier)
-                .where(Edge::getSrc)
-                .equalTo(i -> i)
-                .window(GlobalWindows.create())
-                .trigger(CountTrigger.of(1))
-                .apply((JoinFunction<Edge, Integer, Integer>) (edge, integer) -> edge.getDest())
-                .keyBy(i -> i)
-                .flatMap(new Deduplicate());
-    }
-
-    private static class Deduplicate extends RichFlatMapFunction<Integer, Integer> {
-
-        private ValueState<Boolean> seen;
-
-        @Override
-        public void open(Configuration config) {
-            ValueStateDescriptor<Boolean> desc = new ValueStateDescriptor<>("seen", Types.BOOLEAN);
-            seen = getRuntimeContext().getState(desc);
-        }
-
-        @Override
-        public void flatMap(Integer input, Collector<Integer> collector) throws Exception {
-            if (seen.value() == null) {
-                collector.collect(input);
-                seen.update(true);
+    public static List<Query> getQueries() throws Exception {
+        var reader = new BufferedReader(new InputStreamReader(getResourceInputStream("queries.txt")));
+        List<Query> queries = new ArrayList<>();
+        String line = reader.readLine();
+        int id = 1;
+        while (line != null) {
+            if (line.isBlank()) {
+                line = reader.readLine();
+                continue;
             }
+            var q = QueryParser.parserQuery(line, id);
+            id++;
+            queries.add(q);
+            line = reader.readLine();
         }
+        return queries;
     }
+
+    private static InputStream getResourceInputStream(String fileName) {
+        var is = PipelineGenerator.class.getClassLoader()
+                .getResourceAsStream(fileName);
+        Objects.requireNonNull(is);
+        return is;
+    }
+
 }
