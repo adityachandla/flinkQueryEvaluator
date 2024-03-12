@@ -1,0 +1,10 @@
+Forum (>, forumMember)
+Post (>, postContainerForum)
+
+Person (<>, personKnows)(<>, personKnows)
+Person(>, personWorksAt)(>, orgLocation)
+
+Person (<>, personKnows)(>, personInterestTag)(>, tagClass)
+Post (>, postContainerForum)(>, forumTag)(>, tagClass)
+
+Comment (>, commentCreator)(>, personInterestTag)(>, tagClass)(>, tagClassSuperclass)

@@ -4,24 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/input.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/Edge.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeReaderFormat.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/LabelDirection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/maven/archetype.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/main/java/App.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/archetype-resources/src/test/java/AppTest.java" afterDir="false" />
+    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Initial commit for BFS.">
+      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/queries.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/Direction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/EdgeMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/GeneratedQuery.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/IntervalMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/Query.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/org/tue/thesis/parser/QueryParserTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/input.txt" beforeDir="false" afterPath="$PROJECT_DIR$/input.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/LabelDirection.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +29,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JUnit5 Test Class" />
         <option value="Class" />
+        <option value="Enum" />
       </list>
     </option>
   </component>
@@ -41,10 +41,10 @@
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 8
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
   <component name="ProjectId" id="2dOgLGqhCwNfVUEx06FyscCcmQA" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -53,9 +53,12 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.QueryProcessor.executor": "Run",
+    "JUnit.QueryParserTest.testQueryParsing.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
     "git-widget-placeholder": "master",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "/home/aditya/Documents/projects/flinkGraphProcessor/target/flinkGraphProcessor-1.0-SNAPSHOT.jar",
@@ -71,7 +74,18 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager">
+  <component name="RecentsManager">
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="org.tue.thesis.parser" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="org.tue.thesis.parser" />
+    </key>
+  </component>
+  <component name="RunManager" selected="JUnit.QueryParserTest.testQueryParsing">
     <configuration name="QueryProcessor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="11" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -89,8 +103,25 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="QueryParserTest.testQueryParsing" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="flinkGraphProcessor" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.tue.thesis.parser.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="org.tue.thesis.parser" />
+      <option name="MAIN_CLASS_NAME" value="org.tue.thesis.parser.QueryParserTest" />
+      <option name="METHOD_NAME" value="testQueryParsing" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="JUnit.QueryParserTest.testQueryParsing" />
         <item itemvalue="Application.QueryProcessor" />
       </list>
     </recent_temporary>
@@ -111,11 +142,25 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1709884481740</updated>
-      <workItem from="1709884483796" duration="13120000" />
+      <workItem from="1709884483796" duration="13753000" />
+      <workItem from="1710228062022" duration="6409000" />
     </task>
+    <task id="LOCAL-00001" summary="Initial commit for BFS.">
+      <option name="closed" value="true" />
+      <created>1709903903578</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1709903903578</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Initial commit for BFS." />
+    <option name="LAST_COMMIT_MESSAGE" value="Initial commit for BFS." />
   </component>
 </project>
