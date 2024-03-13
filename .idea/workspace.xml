@@ -4,22 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Added parser code.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/Deduplicate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/edgeMap.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/nodeMap1.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/nodeMap10.csv" afterDir="false" />
+    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Added parser and bfs based on generated query.">
+      <change afterPath="$PROJECT_DIR$/localEdges.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/CommandLineParameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/KinesisParameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/Parameters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/localEdgeMap.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/localNodeMap.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/localQueries.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/queries.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/queries.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/EdgeMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/EdgeMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/GeneratedQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/GeneratedQuery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/IntervalMap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/IntervalMap.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryParser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/parser/QueryParser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/org/tue/thesis/parser/QueryParserTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/org/tue/thesis/parser/QueryParserTest.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,6 +27,7 @@
       <list>
         <option value="JUnit5 Test Class" />
         <option value="Enum" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -79,6 +76,7 @@
       <recent name="" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src/main/resources" />
     </key>
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
@@ -95,7 +93,7 @@
       <option name="INCLUDE_PROVIDED_SCOPE" value="true" />
       <option name="MAIN_CLASS_NAME" value="org.tue.thesis.QueryProcessor" />
       <module name="flinkGraphProcessor" />
-      <option name="PROGRAM_PARAMETERS" value="-input file://$PROJECT_DIR$/../ldbc_converter/sf1/adjacency/ -output file://$PROJECT_DIR$/" />
+      <option name="PROGRAM_PARAMETERS" value="--local" />
       <option name="VM_PARAMETERS" value="--add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.nio=ALL-UNNAMED --add-opens java.base/sun.nio.ch=ALL-UNNAMED" />
       <extension name="coverage">
         <pattern>
@@ -152,7 +150,8 @@
       <updated>1709884481740</updated>
       <workItem from="1709884483796" duration="13753000" />
       <workItem from="1710228062022" duration="6445000" />
-      <workItem from="1710237540814" duration="5116000" />
+      <workItem from="1710237540814" duration="5194000" />
+      <workItem from="1710314534908" duration="9870000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit for BFS.">
       <option name="closed" value="true" />
@@ -170,7 +169,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710234482789</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Added parser and bfs based on generated query.">
+      <option name="closed" value="true" />
+      <created>1710242923953</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1710242923954</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -179,6 +186,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Initial commit for BFS." />
     <MESSAGE value="Added parser code." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added parser code." />
+    <MESSAGE value="Added parser and bfs based on generated query." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added parser and bfs based on generated query." />
   </component>
 </project>

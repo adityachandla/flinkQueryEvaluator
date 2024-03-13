@@ -13,6 +13,7 @@ import org.apache.flink.streaming.api.windowing.assigners.GlobalWindows;
 import org.apache.flink.streaming.api.windowing.triggers.CountTrigger;
 import org.tue.thesis.dto.Edge;
 import org.tue.thesis.dto.EdgeReaderFormat;
+import org.tue.thesis.dto.Parameters;
 import org.tue.thesis.ops.Deduplicate;
 import org.tue.thesis.parser.Direction;
 import org.tue.thesis.parser.GeneratedQuery;
@@ -21,17 +22,27 @@ import java.util.List;
 
 public class PipelineGenerator {
 
-    public static StreamExecutionEnvironment getExecutionEnvironment(CommandLine cliArgs,
-                                                                     List<GeneratedQuery> queries) {
-        var inputPath = cliArgs.getOptionValue("input");
-        var outputPath = cliArgs.getOptionValue("output");
+    private static final String localInputPath =
+            "file:///home/aditya/Documents/projects/flinkGraphProcessor/localEdges.txt";
+    private static final String localOutputPath =
+            "file:///home/aditya/Documents/projects/flinkGraphProcessor/";
 
-        var env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(1);
+    public static void createExecutionGraph(StreamExecutionEnvironment env,
+                                                                  Parameters params,
+                                                                  List<GeneratedQuery> queries) {
+        String inputPath, outputPath;
+        if (params.isLocal()) {
+            inputPath = localInputPath;
+            outputPath = localOutputPath;
+        } else {
+            inputPath = params.getInputPath();
+            outputPath = params.getOutputPath();
+        }
+
 
         var fileSource = FileSource.forRecordStreamFormat(new EdgeReaderFormat(), new Path(inputPath));
         DataStream<Edge> edgeStream = env
-                .fromSource(fileSource.build(), WatermarkStrategy.noWatermarks(), "adjacencyMatrix");
+                .fromSource(fileSource.build(), WatermarkStrategy.noWatermarks(), "edgeSource");
 
         for (var q : queries) {
             DataStream<Integer> frontier = env.fromCollection(List.of(q.getStart()));
@@ -41,7 +52,6 @@ public class PipelineGenerator {
             frontier.sinkTo(FileSink.forRowFormat(new Path(outputPath), new SimpleStringEncoder<Integer>())
                     .build());
         }
-        return env;
     }
 
 
