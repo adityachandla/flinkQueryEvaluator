@@ -4,11 +4,16 @@ import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.flink.api.common.RuntimeExecutionMode;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.connector.file.sink.FileSink;
+import org.apache.flink.connector.file.src.FileSource;
+import org.apache.flink.core.fs.Path;
+import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.tue.thesis.dto.CommandLineParameters;
-import org.tue.thesis.dto.KinesisParameters;
-import org.tue.thesis.dto.Parameters;
+import org.tue.thesis.dto.*;
 import org.tue.thesis.parser.*;
 
 import java.io.BufferedReader;
@@ -18,10 +23,16 @@ import java.util.*;
 
 
 public class QueryProcessor {
+    private static final String localInputPath =
+            "file:///home/aditya/Documents/projects/flinkGraphProcessor/localEdges.txt";
+    private static final String localOutputPath =
+            "file:///home/aditya/Documents/projects/flinkGraphProcessor/";
+
 
     public static void main(String[] args) throws Exception {
         var env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(5);
+        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
         Parameters runtimeParams;
         if (env instanceof LocalStreamEnvironment) {
             Options opts = getOptions();
@@ -29,7 +40,7 @@ public class QueryProcessor {
             var parser = new DefaultParser();
             runtimeParams = new CommandLineParameters(parser.parse(opts, args));
         } else {
-            Map<String, Properties> props =  KinesisAnalyticsRuntime.getApplicationProperties();
+            Map<String, Properties> props = KinesisAnalyticsRuntime.getApplicationProperties();
             runtimeParams = new KinesisParameters(props.get("RuntimeProperties"));
         }
 
@@ -44,8 +55,35 @@ public class QueryProcessor {
         } else {
             generatedQueries = generator.generateAll(queries);
         }
-        PipelineGenerator.createExecutionGraph(env, runtimeParams, generatedQueries);
+        DataStream<EdgeWithLabel> input = generateInput(runtimeParams, env);
+        for (var q : generatedQueries) {
+            DataStream<Integer> output = PipelineGenerator.createExecutionGraph(env, input, q);
+            sinkOutput(runtimeParams, output);
+        }
         env.execute("BFS Evaluator");
+    }
+
+    private static void sinkOutput(Parameters params, DataStream<Integer> output) {
+        String outputPath;
+        if (params.isLocal()) {
+            outputPath = localOutputPath;
+        } else {
+            outputPath = params.getInputPath();
+        }
+        output.sinkTo(FileSink.forRowFormat(new Path(outputPath), new SimpleStringEncoder<Integer>()).build());
+    }
+
+    private static DataStream<EdgeWithLabel> generateInput(Parameters params, StreamExecutionEnvironment env) {
+        String inputPath;
+        if (params.isLocal()) {
+            inputPath = localInputPath;
+        } else {
+            inputPath = params.getInputPath();
+        }
+
+        var fileSource = FileSource.forRecordStreamFormat(new EdgeReaderFormat(), new Path(inputPath));
+        return env
+                .fromSource(fileSource.build(), WatermarkStrategy.noWatermarks(), "edgeSource");
     }
 
     private static Options getOptions() {

@@ -4,18 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Added parser and bfs based on generated query.">
-      <change afterPath="$PROJECT_DIR$/localEdges.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/CommandLineParameters.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/KinesisParameters.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/Parameters.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/localEdgeMap.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/localNodeMap.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/localQueries.txt" afterDir="false" />
+    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Added local execution properties and kinesis configurations.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/GellyTrial.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgePart.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/GroupByKey.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/localEdges.txt" beforeDir="false" afterPath="$PROJECT_DIR$/localEdges.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/Edge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeWithLabel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeReaderFormat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeReaderFormat.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,30 +46,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Application.QueryProcessor.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.QueryParserTest.testQueryParsing.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary&quot;: &quot;JUnit5&quot;,
-    &quot;com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5&quot;: &quot;&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/aditya/Documents/projects/flinkGraphProcessor/target/flinkGraphProcessor-1.0-SNAPSHOT.jar&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;bigdataide_conn_settings&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.GellyTrial.executor": "Run",
+    "Application.QueryProcessor.executor": "Run",
+    "JUnit.QueryParserTest.testQueryParsing.executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/home/aditya/Documents/projects/flinkGraphProcessor/target/flinkGraphProcessor-1.0-SNAPSHOT.jar",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "bigdataide_conn_settings",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
@@ -86,7 +86,20 @@
       <recent name="org.tue.thesis.parser" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.QueryProcessor">
+  <component name="RunManager" selected="Application.GellyTrial">
+    <configuration name="GellyTrial" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.tue.thesis.GellyTrial" />
+      <module name="flinkGraphProcessor" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.tue.thesis.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="QueryProcessor" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="ALTERNATIVE_JRE_PATH" value="11" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -122,11 +135,13 @@
       </method>
     </configuration>
     <list>
+      <item itemvalue="Application.GellyTrial" />
       <item itemvalue="Application.QueryProcessor" />
       <item itemvalue="JUnit.QueryParserTest.testQueryParsing" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.GellyTrial" />
         <item itemvalue="Application.QueryProcessor" />
         <item itemvalue="JUnit.QueryParserTest.testQueryParsing" />
       </list>
@@ -151,7 +166,8 @@
       <workItem from="1709884483796" duration="13753000" />
       <workItem from="1710228062022" duration="6445000" />
       <workItem from="1710237540814" duration="5194000" />
-      <workItem from="1710314534908" duration="9870000" />
+      <workItem from="1710314534908" duration="16524000" />
+      <workItem from="1710399580591" duration="11954000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit for BFS.">
       <option name="closed" value="true" />
@@ -177,7 +193,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710242923954</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Added local execution properties and kinesis configurations.">
+      <option name="closed" value="true" />
+      <created>1710329677717</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1710329677717</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -187,6 +211,7 @@
     <MESSAGE value="Initial commit for BFS." />
     <MESSAGE value="Added parser code." />
     <MESSAGE value="Added parser and bfs based on generated query." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added parser and bfs based on generated query." />
+    <MESSAGE value="Added local execution properties and kinesis configurations." />
+    <option name="LAST_COMMIT_MESSAGE" value="Added local execution properties and kinesis configurations." />
   </component>
 </project>

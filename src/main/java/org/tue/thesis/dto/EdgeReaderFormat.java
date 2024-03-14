@@ -12,20 +12,20 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class EdgeReaderFormat extends SimpleStreamFormat<Edge> {
+public class EdgeReaderFormat extends SimpleStreamFormat<EdgeWithLabel> {
     private static final long serialVersionUID = 2834737L;
 
     @Override
-    public Reader<Edge> createReader(Configuration configuration, FSDataInputStream fsDataInputStream) throws IOException {
+    public Reader<EdgeWithLabel> createReader(Configuration configuration, FSDataInputStream fsDataInputStream) throws IOException {
         return new EdgeReader(fsDataInputStream);
     }
 
     @Override
-    public TypeInformation<Edge> getProducedType() {
-        return TypeInformation.of(Edge.class);
+    public TypeInformation<EdgeWithLabel> getProducedType() {
+        return TypeInformation.of(EdgeWithLabel.class);
     }
 
-    public static final class EdgeReader implements StreamFormat.Reader<Edge> {
+    public static final class EdgeReader implements StreamFormat.Reader<EdgeWithLabel> {
 
         private final BufferedReader br;
 
@@ -35,7 +35,7 @@ public class EdgeReaderFormat extends SimpleStreamFormat<Edge> {
 
         @Nullable
         @Override
-        public Edge read() throws IOException {
+        public EdgeWithLabel read() throws IOException {
             String line = br.readLine();
             if (line == null) {
                 return null;
@@ -48,7 +48,7 @@ public class EdgeReaderFormat extends SimpleStreamFormat<Edge> {
             int src = Integer.parseInt(parts[0].substring(1));
             int label = Integer.parseInt(parts[1]);
             int dest = Integer.parseInt(parts[2]);
-            return new Edge(src, label, dest);
+            return new EdgeWithLabel(src, label, dest);
         }
 
         @Override
