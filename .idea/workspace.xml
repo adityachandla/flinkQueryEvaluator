@@ -4,17 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Added local execution properties and kinesis configurations.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/GellyTrial.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgePart.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/GroupByKey.java" afterDir="false" />
+    <list default="true" id="4d172e6f-142f-454b-ac50-abdf7fd1d724" name="Changes" comment="Gelly working commit.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/EdgeMapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/ReachabilityCombiner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/ops/VertexCompute.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/localEdges.txt" beforeDir="false" afterPath="$PROJECT_DIR$/localEdges.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/PipelineGenerator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/Edge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeWithLabel.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeReaderFormat.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/dto/EdgeReaderFormat.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/GellyTrial.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/tue/thesis/GellyPipelineGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/tue/thesis/QueryProcessor.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,6 +45,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.GellyPipelineGenerator.executor": "Run",
     "Application.GellyTrial.executor": "Run",
     "Application.QueryProcessor.executor": "Run",
     "JUnit.QueryParserTest.testQueryParsing.executor": "Run",
@@ -86,10 +84,11 @@
       <recent name="org.tue.thesis.parser" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.GellyTrial">
-    <configuration name="GellyTrial" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="org.tue.thesis.GellyTrial" />
+  <component name="RunManager" selected="Application.GellyPipelineGenerator">
+    <configuration name="GellyPipelineGenerator" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.tue.thesis.GellyPipelineGenerator" />
       <module name="flinkGraphProcessor" />
+      <option name="PROGRAM_PARAMETERS" value="--local" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="org.tue.thesis.*" />
@@ -135,13 +134,13 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Application.GellyTrial" />
+      <item itemvalue="Application.GellyPipelineGenerator" />
       <item itemvalue="Application.QueryProcessor" />
       <item itemvalue="JUnit.QueryParserTest.testQueryParsing" />
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.GellyTrial" />
+        <item itemvalue="Application.GellyPipelineGenerator" />
         <item itemvalue="Application.QueryProcessor" />
         <item itemvalue="JUnit.QueryParserTest.testQueryParsing" />
       </list>
@@ -167,7 +166,7 @@
       <workItem from="1710228062022" duration="6445000" />
       <workItem from="1710237540814" duration="5194000" />
       <workItem from="1710314534908" duration="16524000" />
-      <workItem from="1710399580591" duration="11954000" />
+      <workItem from="1710399580591" duration="15772000" />
     </task>
     <task id="LOCAL-00001" summary="Initial commit for BFS.">
       <option name="closed" value="true" />
@@ -201,7 +200,15 @@
       <option name="project" value="LOCAL" />
       <updated>1710329677717</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Gelly working commit.">
+      <option name="closed" value="true" />
+      <created>1710415151279</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1710415151279</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,6 +219,7 @@
     <MESSAGE value="Added parser code." />
     <MESSAGE value="Added parser and bfs based on generated query." />
     <MESSAGE value="Added local execution properties and kinesis configurations." />
-    <option name="LAST_COMMIT_MESSAGE" value="Added local execution properties and kinesis configurations." />
+    <MESSAGE value="Gelly working commit." />
+    <option name="LAST_COMMIT_MESSAGE" value="Gelly working commit." />
   </component>
 </project>

@@ -4,16 +4,23 @@ import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
-import org.apache.flink.api.common.RuntimeExecutionMode;
-import org.apache.flink.api.common.eventtime.WatermarkStrategy;
-import org.apache.flink.api.common.serialization.SimpleStringEncoder;
-import org.apache.flink.connector.file.sink.FileSink;
-import org.apache.flink.connector.file.src.FileSource;
-import org.apache.flink.core.fs.Path;
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.environment.LocalStreamEnvironment;
-import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.tue.thesis.dto.*;
+import org.apache.flink.api.common.functions.FlatMapFunction;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.java.DataSet;
+import org.apache.flink.api.java.ExecutionEnvironment;
+import org.apache.flink.api.java.operators.DataSource;
+import org.apache.flink.graph.Edge;
+import org.apache.flink.graph.Graph;
+import org.apache.flink.graph.Vertex;
+import org.apache.flink.types.NullValue;
+import org.apache.flink.util.Collector;
+import org.tue.thesis.dto.CommandLineParameters;
+import org.tue.thesis.dto.KinesisParameters;
+import org.tue.thesis.dto.Parameters;
+import org.tue.thesis.ops.EdgeMapper;
+import org.tue.thesis.ops.ReachabilityCombiner;
+import org.tue.thesis.ops.VertexCompute;
 import org.tue.thesis.parser.*;
 
 import java.io.BufferedReader;
@@ -21,26 +28,27 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
+public class GellyPipelineGenerator {
 
-public class QueryProcessor {
     private static final String localInputPath =
             "file:///home/aditya/Documents/projects/flinkGraphProcessor/localEdges.txt";
+    //    private static final String localInputPath =
+//            "file:///home/aditya/Documents/projects/ldbc_converter/sf1/adjacency/s_0_e_2225.csv";
     private static final String localOutputPath =
-            "file:///home/aditya/Documents/projects/flinkGraphProcessor/";
-
+            "file:///home/aditya/Documents/projects/flinkGraphProcessor/oup";
 
     public static void main(String[] args) throws Exception {
-        var env = StreamExecutionEnvironment.getExecutionEnvironment();
-        env.setParallelism(5);
-        env.setRuntimeMode(RuntimeExecutionMode.BATCH);
+        var env = ExecutionEnvironment.getExecutionEnvironment();
+        env.setParallelism(2);
+
         Parameters runtimeParams;
-        if (env instanceof LocalStreamEnvironment) {
+        Map<String, Properties> props = KinesisAnalyticsRuntime.getApplicationProperties();
+        if (props.isEmpty()) {
             Options opts = getOptions();
 
             var parser = new DefaultParser();
             runtimeParams = new CommandLineParameters(parser.parse(opts, args));
         } else {
-            Map<String, Properties> props = KinesisAnalyticsRuntime.getApplicationProperties();
             runtimeParams = new KinesisParameters(props.get("RuntimeProperties"));
         }
 
@@ -55,35 +63,53 @@ public class QueryProcessor {
         } else {
             generatedQueries = generator.generateAll(queries);
         }
-        DataStream<EdgeWithLabel> input = generateInput(runtimeParams, env);
-        for (var q : generatedQueries) {
-            DataStream<Integer> output = PipelineGenerator.createExecutionGraph(env, input, q);
-            sinkOutput(runtimeParams, output);
+        Graph<Integer, NullValue, Integer> g = readGraph(env, runtimeParams);
+        var query = generatedQueries.get(0);
+        int startNode = query.getStart();
+        var lblDir = query.getLabelDirections();
+        var frontierGraph = g.mapVertices(new MapFunction<Vertex<Integer, NullValue>, Integer>() {
+                    @Override
+                    public Integer map(Vertex<Integer, NullValue> vertex) throws Exception {
+                        return vertex.getId() == startNode ? 1 : Integer.MAX_VALUE;
+                    }
+                })
+                .runVertexCentricIteration(new VertexCompute(lblDir), new ReachabilityCombiner(), lblDir.size() + 1);
+
+        DataSet<Integer> result = frontierGraph
+                .filterOnVertices(v -> v.getValue() == lblDir.size() + 1).getVertexIds();
+        if (runtimeParams.isLocal()) {
+            result.writeAsText(localOutputPath);
+        } else {
+            result.writeAsText(runtimeParams.getOutputPath());
         }
-        env.execute("BFS Evaluator");
+        env.execute("BFS Job");
     }
 
-    private static void sinkOutput(Parameters params, DataStream<Integer> output) {
-        String outputPath;
+    private static Graph<Integer, NullValue, Integer> readGraph(ExecutionEnvironment env, Parameters params) {
+        DataSource<String> input;
         if (params.isLocal()) {
-            outputPath = localOutputPath;
+            input = env.readTextFile(localInputPath);
         } else {
-            outputPath = params.getInputPath();
+            input = env.readTextFile(params.getInputPath());
         }
-        output.sinkTo(FileSink.forRowFormat(new Path(outputPath), new SimpleStringEncoder<Integer>()).build());
-    }
+        DataSet<Edge<Integer, Integer>> edges = input
+                .filter(line -> line.endsWith("ue)"))
+                .map(new EdgeMapper())
+                .returns(new TypeHint<Edge<Integer, Integer>>() {
+                });
+        DataSet<Vertex<Integer, NullValue>> vertices = edges.flatMap(new FlatMapFunction<Edge<Integer, Integer>, Integer>() {
+                    @Override
+                    public void flatMap(Edge<Integer, Integer> edge, Collector<Integer> collector) throws Exception {
+                        collector.collect(edge.f0);
+                        collector.collect(edge.f1);
+                    }
+                })
+                .distinct()
+                .map(e -> new Vertex<>(e, NullValue.getInstance()))
+                .returns(new TypeHint<Vertex<Integer, NullValue>>() {
+                });
 
-    private static DataStream<EdgeWithLabel> generateInput(Parameters params, StreamExecutionEnvironment env) {
-        String inputPath;
-        if (params.isLocal()) {
-            inputPath = localInputPath;
-        } else {
-            inputPath = params.getInputPath();
-        }
-
-        var fileSource = FileSource.forRecordStreamFormat(new EdgeReaderFormat(), new Path(inputPath));
-        return env
-                .fromSource(fileSource.build(), WatermarkStrategy.noWatermarks(), "edgeSource");
+        return Graph.fromDataSet(vertices, edges, env);
     }
 
     private static Options getOptions() {
