@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import org.apache.flink.graph.Vertex;
 import org.apache.flink.graph.pregel.ComputeFunction;
 import org.apache.flink.graph.pregel.MessageIterator;
-import org.tue.thesis.parser.GeneratedQuery;
 
 import java.util.List;
 
 @AllArgsConstructor
 public final class VertexCompute extends ComputeFunction<Integer, Integer, Integer, Integer> {
 
-    private List<GeneratedQuery.LabelDirection> lblDirections;
+    private List<Integer> labels;
 
 
     @Override
@@ -20,7 +19,7 @@ public final class VertexCompute extends ComputeFunction<Integer, Integer, Integ
         int stepNumber = getSuperstepNumber();
         if (vertex.getValue() == stepNumber) {
 //            System.out.println("Processing vertex "  + vertex.getId() + " in iteration " + stepNumber);
-            var label = lblDirections.get(stepNumber-1).getLabel();
+            int label = labels.get(stepNumber - 1);
             for (var edge : getEdges()) {
                 if (edge.getValue() == label) {
                     sendMessageTo(edge.getTarget(), stepNumber + 1);
@@ -35,9 +34,9 @@ public final class VertexCompute extends ComputeFunction<Integer, Integer, Integ
 //                System.out.println("Passing messages from vertex " + vertex.getId() + " in iteration " + stepNumber);
                 setNewVertexValue(minMessage);
                 //Last iteration.
-                if (minMessage-1 == lblDirections.size()) return;
+                if (minMessage - 1 == labels.size()) return;
 
-                int label = lblDirections.get(minMessage-1).getLabel();
+                int label = labels.get(minMessage - 1);
                 for (var edge : getEdges()) {
                     if (edge.getValue() == label) {
                         sendMessageTo(edge.getTarget(), minMessage + 1);

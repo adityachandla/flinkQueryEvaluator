@@ -44,4 +44,9 @@ public class KinesisParameters implements Parameters{
         }
         throw new IllegalArgumentException("Invalid scaling factor");
     }
+
+    @Override
+    public int getNumRepetitions() {
+        return Integer.parseInt(props.getProperty("repetitions", "1"));
+    }
 }

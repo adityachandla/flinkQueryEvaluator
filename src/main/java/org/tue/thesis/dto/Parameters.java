@@ -8,6 +8,8 @@ public interface Parameters {
     int getQueryNumber();
     ScalingFactor getScalingFactor();
 
+    int getNumRepetitions();
+
     enum ScalingFactor {
         ONE, TEN
     }

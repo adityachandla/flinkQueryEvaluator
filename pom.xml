@@ -56,7 +56,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.18.30</version>
-            <scope>provided</scope>
+            <scope>compile</scope>
         </dependency>
         <!-- Add connector dependencies here. They must be in the default scope (compile). -->
 
@@ -111,6 +111,7 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-gelly</artifactId>
+            <scope>compile</scope>
             <version>1.16.3</version>
         </dependency>
         <!-- Amazon Kinesis Analytics runtime dependency -->

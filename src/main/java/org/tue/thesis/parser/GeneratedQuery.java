@@ -11,15 +11,5 @@ import java.util.List;
 public class GeneratedQuery {
     private int id;
     private int start;
-    private List<LabelDirection> labelDirections;
-
-    @AllArgsConstructor
-    @Getter
-    public static class LabelDirection implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        private int label;
-        private Direction direction;
-
-    }
+    private List<Integer> labels;
 }

@@ -13,15 +13,5 @@ public class Query implements Serializable {
 
     private Integer id;
     private String sourceType;
-    private List<LabelDirection> labelDirections;
-
-    @AllArgsConstructor
-    @Getter
-    static class LabelDirection implements Serializable {
-        private static final long serialVersionUID = 1L;
-
-        private String label;
-        private Direction direction;
-
-    }
+    private List<String> labels;
 }

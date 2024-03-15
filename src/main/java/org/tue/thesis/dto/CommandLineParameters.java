@@ -43,4 +43,10 @@ public class CommandLineParameters implements Parameters{
         }
         throw new IllegalArgumentException("Invalid scaling factor");
     }
+
+    @Override
+    public int getNumRepetitions() {
+        return cli.getOptionValue("repetitions") == null ? 1 :
+                Integer.parseInt(cli.getOptionValue("repetitions"));
+    }
 }

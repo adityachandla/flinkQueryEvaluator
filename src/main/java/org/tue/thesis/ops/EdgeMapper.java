@@ -7,7 +7,7 @@ public final class EdgeMapper implements MapFunction<String, Edge<Integer, Integ
     @Override
     public Edge<Integer, Integer> map(String line) throws Exception {
         String[] splits = line.split(",");
-        int src = Integer.parseInt(splits[0].substring(1));
+        int src = Integer.parseInt(splits[0]);
         int label = Integer.parseInt(splits[1]);
         int dest = Integer.parseInt(splits[2]);
         return new Edge<>(src, dest, label);

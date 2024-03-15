@@ -4,6 +4,7 @@ import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
+import org.apache.flink.api.common.ExecutionConfig;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.common.typeinfo.TypeHint;
@@ -41,48 +42,66 @@ public class GellyPipelineGenerator {
         var env = ExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(2);
 
-        Parameters runtimeParams;
+        Parameters runtimeParams = getParameters(args);
+        List<GeneratedQuery> generatedQueries = generateQueries(runtimeParams);
+
+        Graph<Integer, NullValue, Integer> g = readGraph(env, runtimeParams);
+        int idx = 0;
+        for (var q : generatedQueries) {
+            DataSet<Integer> result = runBfs(g, q);
+            writeResult(runtimeParams, result, idx);
+            idx++;
+        }
+        env.execute("BFS Job");
+    }
+
+    private static void writeResult(Parameters params, DataSet<Integer> result, int idx) {
+        if (params.isLocal()) {
+            result.writeAsText(localOutputPath + idx);
+        } else {
+            result.writeAsText(params.getOutputPath() + idx);
+        }
+    }
+
+    private static List<GeneratedQuery> generateQueries(Parameters params) throws Exception{
+        var queries = getQueries(params);
+        var edgeMap = EdgeMap.fromFile(getEdgeMap(params));
+        var intervalMap = IntervalMap.fromFile(getIntervalMap(params));
+        var generator = new QueryGenerator(edgeMap, intervalMap);
+        Query queryToGenerate = params.hasQueryNumber() ?
+                queries.get(params.getQueryNumber()) : queries.get(0);
+        int numRepetitions = params.getNumRepetitions();
+        List<GeneratedQuery> generatedQueries = new ArrayList<>(numRepetitions);
+        for (int i = 0; i < numRepetitions; i++) {
+            generatedQueries.add(generator.generate(queryToGenerate));
+        }
+        return generatedQueries;
+    }
+
+    private static Parameters getParameters(String[] args) throws Exception {
         Map<String, Properties> props = KinesisAnalyticsRuntime.getApplicationProperties();
         if (props.isEmpty()) {
             Options opts = getOptions();
 
             var parser = new DefaultParser();
-            runtimeParams = new CommandLineParameters(parser.parse(opts, args));
-        } else {
-            runtimeParams = new KinesisParameters(props.get("RuntimeProperties"));
+            return new CommandLineParameters(parser.parse(opts, args));
         }
+        return new KinesisParameters(props.get("RuntimeProperties"));
+    }
 
-        var queries = getQueries(runtimeParams);
-        var edgeMap = EdgeMap.fromFile(getEdgeMap(runtimeParams));
-        var intervalMap = IntervalMap.fromFile(getIntervalMap(runtimeParams));
-        var generator = new QueryGenerator(edgeMap, intervalMap);
-        List<GeneratedQuery> generatedQueries;
-        if (runtimeParams.hasQueryNumber()) {
-            Query queryToRun = queries.get(runtimeParams.getQueryNumber());
-            generatedQueries = List.of(generator.generate(queryToRun));
-        } else {
-            generatedQueries = generator.generateAll(queries);
-        }
-        Graph<Integer, NullValue, Integer> g = readGraph(env, runtimeParams);
-        var query = generatedQueries.get(0);
+    private static DataSet<Integer> runBfs(Graph<Integer, NullValue, Integer> g, GeneratedQuery query) {
         int startNode = query.getStart();
-        var lblDir = query.getLabelDirections();
+        var labels = query.getLabels();
         var frontierGraph = g.mapVertices(new MapFunction<Vertex<Integer, NullValue>, Integer>() {
                     @Override
                     public Integer map(Vertex<Integer, NullValue> vertex) throws Exception {
                         return vertex.getId() == startNode ? 1 : Integer.MAX_VALUE;
                     }
                 })
-                .runVertexCentricIteration(new VertexCompute(lblDir), new ReachabilityCombiner(), lblDir.size() + 1);
+                .runVertexCentricIteration(new VertexCompute(labels), new ReachabilityCombiner(), labels.size() + 1);
 
-        DataSet<Integer> result = frontierGraph
-                .filterOnVertices(v -> v.getValue() == lblDir.size() + 1).getVertexIds();
-        if (runtimeParams.isLocal()) {
-            result.writeAsText(localOutputPath);
-        } else {
-            result.writeAsText(runtimeParams.getOutputPath());
-        }
-        env.execute("BFS Job");
+        return frontierGraph
+                .filterOnVertices(v -> v.getValue() == labels.size() + 1).getVertexIds();
     }
 
     private static Graph<Integer, NullValue, Integer> readGraph(ExecutionEnvironment env, Parameters params) {
@@ -93,7 +112,6 @@ public class GellyPipelineGenerator {
             input = env.readTextFile(params.getInputPath());
         }
         DataSet<Edge<Integer, Integer>> edges = input
-                .filter(line -> line.endsWith("ue)"))
                 .map(new EdgeMapper())
                 .returns(new TypeHint<Edge<Integer, Integer>>() {
                 });
@@ -124,6 +142,9 @@ public class GellyPipelineGenerator {
         opts.addOption(outputPathOpt);
         var queryIdxOpt = new Option("q", "query", true, "Index of query to run");
         opts.addOption(queryIdxOpt);
+        var repetitions = new Option("r", "repetitions", true,
+                "Number of repetitions of the query");
+        opts.addOption(repetitions);
         return opts;
     }
 
@@ -171,7 +192,7 @@ public class GellyPipelineGenerator {
     }
 
     private static InputStream getResourceInputStream(String fileName) {
-        var is = PipelineGenerator.class.getClassLoader()
+        var is = GellyPipelineGenerator.class.getClassLoader()
                 .getResourceAsStream(fileName);
         Objects.requireNonNull(is);
         return is;

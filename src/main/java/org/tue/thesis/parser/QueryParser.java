@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 public class QueryParser {
 
     private static final Pattern sourcePattern = Pattern.compile("^(\\w+)");
-    private static final Pattern edgePattern = Pattern.compile("\\(([<>]{1,2}),\\s?(\\w+)\\)");
+    private static final Pattern edgePattern = Pattern.compile("[\\s,](\\w+)");
 
     public static Query parserQuery(String line, int id) {
         var srcMatcher = sourcePattern.matcher(line);
@@ -17,12 +17,11 @@ public class QueryParser {
         String name = srcMatcher.group(1);
 
         var edgeMatcher = edgePattern.matcher(line);
-        List<Query.LabelDirection> labelDirections = new ArrayList<>();
+        List<String> labels = new ArrayList<>();
         while(edgeMatcher.find()) {
-            var direction = Direction.parseDirection(edgeMatcher.group(1));
-            var label = edgeMatcher.group(2);
-            labelDirections.add(new Query.LabelDirection(label, direction));
+            var label = edgeMatcher.group(1);
+            labels.add(label);
         }
-        return new Query(id, name, labelDirections);
+        return new Query(id, name, labels);
     }
 }
